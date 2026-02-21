@@ -1,0 +1,14 @@
+# Claude Code runtime state — never commit these
+.credentials.json
+projects/
+history.jsonl
+debug/
+backups/
+session-env/
+shell-snapshots/
+cache/
+statsig/
+telemetry/
+paste-cache/
+todos/
+tasks/

@@ -1,0 +1,21 @@
+{
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "context7@claude-plugins-official": true
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "model": "sonnet",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/protect-sensitive.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
