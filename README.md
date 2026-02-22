@@ -28,7 +28,9 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 
 - **Universal rules** — no AI attribution, no auto-commits, never start dev servers
 - **Security hooks** — blocks secrets and destructive commands before they happen
-- **Global skills** — `/commit` and `/push` work consistently across every repo
+- **Notifications** — alerts you (sound + OS popup) when Claude needs attention, across macOS, WSL2, and Linux
+- **Global skills** — `/commit`, `/push`, and `/explain-code` work consistently across every repo
+- **Global agents** — `code-reviewer` available in all projects, learns per-project conventions over time
 - **Memory conventions** — clear guidance on what Claude should persist across sessions
 
 ---
@@ -38,13 +40,15 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 | Path | Purpose |
 |------|---------|
 | `CLAUDE.md` | Global instructions loaded at every session — universal rules, WSL2 environment, tooling preferences, memory conventions |
-| `settings.json` | Model selection, enabled plugins, and global hook wiring |
+| `settings.json` | Model selection, enabled plugins, hook wiring (PreToolUse, Notification, Stop) |
 | `hooks/protect-sensitive.sh` | Blocks Write/Edit to `.env`, credentials, and SSH key files by filename |
 | `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
 | `hooks/bash-write-protect.sh` | Blocks shell redirects to sensitive files and universally destructive commands |
+| `hooks/notify.sh` | OS notification when Claude needs attention — macOS (`osascript`), WSL2 (`wsl-notify-send` → `notify-send` → PowerShell), Linux (`notify-send`) + terminal bell fallback |
 | `skills/commit/` | Global `/commit` — conventional commits, secret scan, branch safety, no AI attribution |
 | `skills/push/` | Global `/push` — auto-detects remotes, reads project CLAUDE.md push constraints, reports per-remote results |
-| `agents/` | Global subagents available in all projects (currently empty) |
+| `skills/explain-code/` | Global `/explain-code` — structures explanations as analogy → ASCII diagram → walkthrough → gotcha |
+| `agents/code-reviewer.md` | Global code reviewer — git diff analysis, 🔴/🟡/💡 feedback tiers, per-project memory via `memory: project` |
 
 > **Skills priority:** Personal skills always win over project skills — a project-level skill with the same name cannot override one defined here. Only add skills that are 100% universal across all projects.
 
@@ -178,6 +182,33 @@ Then commit and push so the skill is available on all machines:
 cd ~/personal/claude-config
 git add skills/my-skill
 git commit -m "feat: add global /my-skill skill"
+git push
+```
+
+### Add a global agent
+
+Agents in `agents/<name>.md` are available as sub-agents in all projects. Use `memory: project` to let the agent build per-project knowledge over time.
+
+```bash
+cat > ~/personal/claude-config/agents/my-agent.md << 'EOF'
+---
+name: my-agent
+description: What this agent does and when to invoke it
+tools: Read, Grep, Glob, Bash
+model: opus
+memory: project
+---
+
+Agent instructions here.
+EOF
+```
+
+Then commit and push:
+
+```bash
+cd ~/personal/claude-config
+git add agents/my-agent.md
+git commit -m "feat: add global my-agent agent"
 git push
 ```
 
