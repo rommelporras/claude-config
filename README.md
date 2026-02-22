@@ -34,7 +34,9 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 ├── settings.json
 ├── hooks/
 ├── skills/
-└── agents/
+├── agents/
+└── .claude/
+    └── commands/               ← project-specific commands (e.g. /release)
 
 ~/.claude/                      ← Claude Code config dir (all symlinks)
 ├── CLAUDE.md     ──────────→   ../personal/claude-config/CLAUDE.md
@@ -85,6 +87,7 @@ Restart Claude Code. Every project now inherits these rules automatically.
 | `skills/push/` | `/push` — auto-detects remotes, respects project push constraints |
 | `skills/explain-code/` | `/explain-code` — analogy → ASCII diagram → walkthrough → gotcha |
 | `agents/code-reviewer.md` | Code reviewer — 🔴/🟡/💡 feedback tiers, per-project memory via `memory: project` |
+| `.claude/commands/release.md` | `/release` — semver tagging, CHANGELOG update, GitHub release (active in this repo only) |
 
 ---
 
