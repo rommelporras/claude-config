@@ -22,6 +22,18 @@ Run these in parallel:
 
 If there are no changes at all (nothing staged, nothing modified), stop here and say so. Do not create an empty commit.
 
+## Step 1.5 — Branch safety check
+
+Read the current branch from the `git status` output above.
+
+If the branch is `main` or `master`:
+1. Check the project CLAUDE.md for branching rules (e.g. GitFlow, trunk-based, protected branch policy)
+2. **Stop and ask the user to confirm** before doing anything else — do not stage, do not commit
+
+Say exactly: "You are on `<branch>`. This branch may be protected — [summarise the branching rule from CLAUDE.md, or 'no branching rule found in CLAUDE.md']. Do you want to commit directly to `<branch>`?"
+
+Only continue if the user explicitly confirms. If they say no or don't respond clearly, stop.
+
 ## Step 2 — Secret scan
 
 Before staging anything, scan all modified and untracked files for leaked secrets. Check for:
