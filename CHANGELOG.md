@@ -5,6 +5,16 @@ All notable changes to this project will be documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.1](https://github.com/rommelporras/claude-config/releases/tag/v1.0.1) - 2026-02-23
+
+Improves stop hook reliability and tightens the 1Password CLI access policy.
+
+### Fixed
+- Stop hook prompt restructured to place the JSON format constraint at the start rather than the end — Haiku weights early instructions more heavily, reducing intermittent "JSON validation failed" errors on long conversations
+
+### Changed
+- 1Password CLI policy tightened: `op` is now documented as completely unavailable in this terminal (not just requiring interactive auth); restriction extended to `kubectl create secret` and any command embedding `op` values
+
 ## [v1.0.0](https://github.com/rommelporras/claude-config/releases/tag/v1.0.0) - 2026-02-22
 
 First stable release. All core security layers, global skills, and agent are in place and verified working.
