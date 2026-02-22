@@ -37,3 +37,11 @@ Project CLAUDE.md files add project-specific context on top of this.
 - **TypeScript:** strict mode only — no `any`, no `// @ts-ignore`.
 - **Documentation:** check Context7 (MCP) before WebFetch for library docs.
 - **Commits:** use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `infra:`).
+
+## Memory
+
+Claude Code persists notes in `~/.claude/projects/<project>/memory/MEMORY.md` (loaded automatically).
+
+**Save:** Stable patterns, key file paths, user preferences, recurring problem solutions.
+**Skip:** Session-specific context, speculative conclusions, anything already in project CLAUDE.md.
+**Trim:** Remove entries that turn out wrong or are superseded by newer findings.

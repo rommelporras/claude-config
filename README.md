@@ -29,10 +29,7 @@ git clone git@github.com:rommelporras/claude-config.git ~/personal/claude-config
 
 ln -sf ~/personal/claude-config/CLAUDE.md ~/.claude/CLAUDE.md
 ln -sf ~/personal/claude-config/settings.json ~/.claude/settings.json
-mkdir -p ~/.claude/hooks
-ln -sf ~/personal/claude-config/hooks/protect-sensitive.sh ~/.claude/hooks/protect-sensitive.sh
-ln -sf ~/personal/claude-config/hooks/bash-write-protect.sh ~/.claude/hooks/bash-write-protect.sh
-ln -sf ~/personal/claude-config/hooks/scan-secrets.sh ~/.claude/hooks/scan-secrets.sh
+ln -sf ~/personal/claude-config/hooks ~/.claude/hooks
 ln -sf ~/personal/claude-config/skills ~/.claude/skills
 ln -sf ~/personal/claude-config/agents ~/.claude/agents
 ```
@@ -43,6 +40,18 @@ Claude Code picks up `~/.claude/CLAUDE.md` automatically on next session.
 
 Files live here. `~/.claude/` has symlinks pointing into this repo.
 Editing any file = immediately reflected. Commit to version it.
+
+## Permission Model
+
+`settings.json` sets `skipDangerousModePermissionPrompt: true` — Claude runs without per-action approval prompts in dangerous mode. Three hook scripts compensate:
+
+| Hook | Trigger | Blocks |
+|------|---------|--------|
+| `hooks/protect-sensitive.sh` | Write/Edit | `.env`, credentials, SSH keys (by filename) |
+| `hooks/scan-secrets.sh` | Write/Edit | Hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
+| `hooks/bash-write-protect.sh` | Bash | Redirects to sensitive files, destructive commands (`rm -rf /`, fork bombs, force push to main) |
+
+Project-specific hooks in `.claude/hooks/` stack on top — both global and project hooks run.
 
 ## Priority Reference
 
