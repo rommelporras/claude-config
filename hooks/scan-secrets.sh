@@ -5,10 +5,10 @@
 # Exit 2 = block the tool call and show error to user.
 
 INPUT=$(cat)
-FILE=$(echo "$INPUT" | jq -r '.file_path // ""')
+FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
 
 # Extract content: Write uses 'content', Edit uses 'new_string'
-CONTENT=$(echo "$INPUT" | jq -r '.content // .new_string // ""')
+CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // ""')
 
 if [[ -z "$CONTENT" ]]; then
   exit 0

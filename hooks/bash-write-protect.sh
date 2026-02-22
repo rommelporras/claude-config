@@ -6,7 +6,7 @@
 # Exit 2 = block the tool call and show error to user.
 
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.command // ""')
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
 
 if [[ -z "$COMMAND" ]]; then
   exit 0

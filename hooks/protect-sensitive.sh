@@ -5,7 +5,8 @@
 # Claude Code calls this before Write and Edit tool uses.
 # Exit 2 = block the tool call and show error to user.
 
-FILE="$CLAUDE_TOOL_INPUT_FILE_PATH"
+INPUT=$(cat)
+FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
 
 # Bail early if no file path (non-file tool calls)
 if [[ -z "$FILE" ]]; then
