@@ -1,28 +1,56 @@
 # claude-config
 
-Personal global Claude Code configuration — applies to all projects automatically.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## What's Here
+Personal global [Claude Code](https://claude.ai/code) configuration — a single repo that applies consistent rules, hooks, and skills across every project automatically.
 
-| File | Purpose |
+> Clone once. Symlink. Every project inherits the same guardrails.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Contents](#contents)
+- [New Machine Setup](#new-machine-setup)
+- [How It Works](#how-it-works)
+- [Permission Model](#permission-model)
+- [Behavior Reference](#behavior-reference)
+- [Project Sync Guide](#project-sync-guide)
+- [Extending](#extending)
+- [License](#license)
+
+---
+
+## Overview
+
+Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/claude-config/` with `~/.claude/` pointing back into it via symlinks — so editing any file here takes effect immediately, in every project, with no reinstall.
+
+**What it provides:**
+
+- **Universal rules** — no AI attribution, no auto-commits, never start dev servers
+- **Security hooks** — blocks secrets and destructive commands before they happen
+- **Global skills** — `/commit` and `/push` work consistently across every repo
+- **Memory conventions** — clear guidance on what Claude should persist across sessions
+
+---
+
+## Contents
+
+| Path | Purpose |
 |------|---------|
-| `CLAUDE.md` | Global instructions: universal rules, WSL2 env, code preferences |
-| `settings.json` | Model, plugins, global hooks |
-| `hooks/protect-sensitive.sh` | Blocks writes to `.env`, credentials, SSH keys on every project (Write/Edit) |
-| `hooks/bash-write-protect.sh` | Blocks Bash shell redirects (`>`, `>>`, `tee`) to sensitive files |
-| `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains secret patterns (keys, tokens, PEM) |
-| `skills/commit/` | Global `/commit` skill — conventional commits, secret scan, branch safety, no AI attribution |
-| `skills/push/` | Global `/push` skill — auto-detects remotes, respects CLAUDE.md push constraints |
+| `CLAUDE.md` | Global instructions loaded at every session — universal rules, WSL2 environment, tooling preferences, memory conventions |
+| `settings.json` | Model selection, enabled plugins, and global hook wiring |
+| `hooks/protect-sensitive.sh` | Blocks Write/Edit to `.env`, credentials, and SSH key files by filename |
+| `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
+| `hooks/bash-write-protect.sh` | Blocks shell redirects to sensitive files and universally destructive commands |
+| `skills/commit/` | Global `/commit` — conventional commits, secret scan, branch safety, no AI attribution |
+| `skills/push/` | Global `/push` — auto-detects remotes, reads project CLAUDE.md push constraints, reports per-remote results |
 | `agents/` | Global subagents available in all projects (currently empty) |
 
-> **Skills note:** Personal skills take priority over project skills (personal > project).
-> A project-level skill with the same name **cannot** override a skill defined here.
-> Only add skills that are universal across all projects with no per-project variation.
-> `/commit` and `/push` qualify: same safety rules and remote detection logic apply everywhere.
+> **Skills priority:** Personal skills always win over project skills — a project-level skill with the same name cannot override one defined here. Only add skills that are 100% universal across all projects.
+
+---
 
 ## New Machine Setup
-
-Clone and symlink:
 
 ```bash
 git clone git@github.com:rommelporras/claude-config.git ~/personal/claude-config
@@ -34,49 +62,62 @@ ln -sf ~/personal/claude-config/skills ~/.claude/skills
 ln -sf ~/personal/claude-config/agents ~/.claude/agents
 ```
 
-Claude Code picks up `~/.claude/CLAUDE.md` automatically on next session.
+Claude Code picks up `~/.claude/CLAUDE.md` automatically on the next session.
+
+---
 
 ## How It Works
 
-Files live here. `~/.claude/` has symlinks pointing into this repo.
-Editing any file = immediately reflected. Commit to version it.
+```
+~/personal/claude-config/       ← versioned source of truth
+├── CLAUDE.md
+├── settings.json
+├── hooks/
+├── skills/
+└── agents/
+
+~/.claude/                      ← Claude Code config dir (all symlinks)
+├── CLAUDE.md     ──────────→   ../personal/claude-config/CLAUDE.md
+├── settings.json ──────────→   ../personal/claude-config/settings.json
+├── hooks/        ──────────→   ../personal/claude-config/hooks/
+├── skills/       ──────────→   ../personal/claude-config/skills/
+└── agents/       ──────────→   ../personal/claude-config/agents/
+```
+
+Edit any file in this repo → change is immediately reflected in all Claude Code sessions. Commit to version it.
+
+---
 
 ## Permission Model
 
-`settings.json` sets `skipDangerousModePermissionPrompt: true` — Claude runs without per-action approval prompts in dangerous mode. Three hook scripts compensate:
+`settings.json` sets `skipDangerousModePermissionPrompt: true` — Claude runs without per-action approval prompts. Three hook scripts act as the safety net:
 
-| Hook | Trigger | Blocks |
-|------|---------|--------|
-| `hooks/protect-sensitive.sh` | Write/Edit | `.env`, credentials, SSH keys (by filename) |
-| `hooks/scan-secrets.sh` | Write/Edit | Hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
-| `hooks/bash-write-protect.sh` | Bash | Redirects to sensitive files, destructive commands (`rm -rf /`, fork bombs, force push to main) |
+| Hook | Trigger | What It Blocks |
+|------|---------|----------------|
+| `hooks/protect-sensitive.sh` | Write / Edit | `.env`, credentials, SSH keys — matched by filename |
+| `hooks/scan-secrets.sh` | Write / Edit | Hardcoded secrets in content: PEM keys, AWS `AKIA*` keys, GitHub/Anthropic/OpenAI tokens |
+| `hooks/bash-write-protect.sh` | Bash | Shell redirects to sensitive files; destructive commands: `rm -rf /`, fork bombs, `dd if=/dev`, `mkfs.*`, force push to `main`/`master` |
 
-Project-specific hooks in `.claude/hooks/` stack on top — both global and project hooks run.
+**Hook stacking:** Global hooks and project hooks both run — they don't replace each other. Add project-specific hooks in `.claude/hooks/` and they stack on top of these.
 
-## Priority Reference
+---
 
-| Feature | Priority order | Effect |
+## Behavior Reference
+
+| Feature | Priority Order | Effect |
 |---------|---------------|--------|
-| CLAUDE.md | Global → Project (project wins) | Project instructions add on top and override conflicts |
-| Skills (same name) | Personal → Project (personal wins) | Personal skill blocks project override — use carefully |
-| Agents (same name) | Project → Personal (project wins) | Project can override a global agent |
-| Hooks | All run (stacked) | Global + project hooks both execute |
+| `CLAUDE.md` | Global → Project | Project instructions layer on top; project wins on conflicts |
+| Skills (same name) | Personal → Project | Personal skill blocks any project-level override |
+| Agents (same name) | Project → Personal | Project agent overrides the global default |
+| Hooks | All run (stacked) | Global + project hooks both execute on every trigger |
 
-## Editing Global Instructions
+---
 
-```bash
-# Edit CLAUDE.md (changes immediate via symlink, then commit)
-vim ~/personal/claude-config/CLAUDE.md
-cd ~/personal/claude-config && git add CLAUDE.md && git commit -m "chore: update global rules"
-git push
-```
+## Project Sync Guide
 
-## Syncing Existing Projects
+When this global config is active, project-level commands with the same name as a global skill are **dead code** — the personal skill always wins regardless. Clean them up:
 
-When this global config is active, project-level commands with the same name as a global
-skill are **dead code** — the personal skill always wins. Clean them up per project:
-
-### Remove dead commands
+### 1. Remove dead commands
 
 ```bash
 # Run inside any project repo — safe to delete, global skill is already active
@@ -84,35 +125,39 @@ rm .claude/commands/commit.md   # replaced by global /commit
 rm .claude/commands/push.md     # replaced by global /push
 ```
 
-### Trim project CLAUDE.md
+### 2. Trim redundant rules from project CLAUDE.md
 
-Remove rules already enforced globally — no need to repeat them per project:
+These are already enforced globally — remove them from individual project files:
 
-| Already global | Where |
-|---|---|
+| Rule | Where It Lives Globally |
+|------|------------------------|
 | No AI attribution in commits | `CLAUDE.md` → Universal Rules |
 | No automatic git commits or pushes | `CLAUDE.md` → Universal Rules |
 | Use `bun` for web projects | `CLAUDE.md` → Tooling Preferences |
 | Use `uv` for Python projects | `CLAUDE.md` → Tooling Preferences |
 | Conventional commit format | `CLAUDE.md` → Tooling Preferences |
 
-Keep project-specific rules: branching model, tech stack, domain constraints, secrets layout.
+Keep project-specific rules: branching model, tech stack decisions, domain constraints, and secrets layout.
 
-### Verify global skills respect project constraints
+### 3. Verify global skills respect project constraints
 
-Global skills read project CLAUDE.md for context. After cleanup, test:
+Global skills read the project CLAUDE.md for context. After cleanup, run a quick smoke test:
 
 ```bash
-# /commit: should block if on a protected branch (reads GitFlow rules from CLAUDE.md)
-# /push: should skip protected remotes (reads push constraints from CLAUDE.md)
-/commit   # on a protected branch → should warn and ask
-/push     # with multiple remotes → should push to each, skip blocked ones
+# On a protected branch — /commit should warn and ask for confirmation
+/commit
+
+# With multiple remotes — /push should push to each, skip any blocked ones
+/push
 ```
 
-## Adding a Global Skill
+---
 
-Skills in `skills/<name>/SKILL.md` are available in all projects as `/<name>`.
-Only add skills that are **100% universal** — project skills cannot override personal ones.
+## Extending
+
+### Add a global skill
+
+Skills in `skills/<name>/SKILL.md` are available in all projects as `/<name>`. Only add skills that are 100% universal — project skills cannot override personal ones.
 
 ```bash
 mkdir -p ~/personal/claude-config/skills/my-skill
@@ -126,3 +171,29 @@ disable-model-invocation: true
 Skill instructions here.
 EOF
 ```
+
+Then commit and push so the skill is available on all machines:
+
+```bash
+cd ~/personal/claude-config
+git add skills/my-skill
+git commit -m "feat: add global /my-skill skill"
+git push
+```
+
+### Edit global instructions
+
+```bash
+# Edit CLAUDE.md — change takes effect immediately via symlink
+vim ~/personal/claude-config/CLAUDE.md
+
+# Version the change
+cd ~/personal/claude-config
+git add CLAUDE.md && git commit -m "chore: update global rules" && git push
+```
+
+---
+
+## License
+
+[MIT](LICENSE) — Copyright (c) 2026 Rommel Porras
