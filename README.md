@@ -4,8 +4,8 @@
 
 Personal global [Claude Code](https://claude.ai/code) configuration — one repo, every project protected.
 
-- **Universal rules** — no AI attribution, no auto-commits, never start dev servers
-- **Security** — blocks credential reads, hardcoded secrets, and destructive commands before they happen
+- **Universal rules** — no AI attribution, no auto-commits, never start dev servers, no destructive ops without confirmation
+- **Security** — blocks credential reads, hardcoded secrets, and destructive commands via hooks; Claude asks before any destructive operation
 - **Notifications** — OS popup + sound when Claude needs attention, on macOS, WSL2, and Linux
 - **Global skills** — `/commit`, `/push`, and `/explain-code` available in every repo
 - **Global agents** — `code-reviewer` with per-project memory, available in all projects
@@ -201,9 +201,8 @@ After any change, commit and push to sync across all your machines:
 
 ```bash
 cd ~/personal/claude-config
-git add <changed files>
-git commit -m "type: description"
-git push
+/commit
+/push
 ```
 
 ---
@@ -226,7 +225,7 @@ rm .claude/commands/push.md     # replaced by global /push
 | No AI attribution in commits | `CLAUDE.md` → Universal Rules |
 | No automatic git commits or pushes | `CLAUDE.md` → Universal Rules |
 | Use `bun` for web projects | `CLAUDE.md` → Tooling Preferences |
-| Use `uv` for Python projects | `CLAUDE.md` → Tooling Preferences |
+| Use `uv` for Python projects with external dependencies | `CLAUDE.md` → Tooling Preferences |
 | Conventional commit format | `CLAUDE.md` → Tooling Preferences |
 
 Keep project-specific rules: branching model, tech stack decisions, domain constraints, secrets layout.

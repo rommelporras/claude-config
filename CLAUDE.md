@@ -13,6 +13,9 @@ Project CLAUDE.md files add project-specific context on top of this.
   secrets before staging. Use secret manager references only, never hardcoded values.
 - **Never run dev servers** — never start `bun run dev`, `uvicorn`, or similar
   background processes. Instruct the user to run them.
+- **No destructive operations without confirmation** — `rm -rf`, force pushes,
+  `kubectl delete`, `helm uninstall`, or anything that destroys data requires
+  explicit user confirmation before running.
 
 ## Personal Environment (WSL2)
 
@@ -20,27 +23,33 @@ Project CLAUDE.md files add project-specific context on top of this.
 - Windows Chrome for browser automation at the standard Windows path.
 - 1Password CLI (`op`) is available but requires interactive auth — generate
   `op read` commands for the user to run, never run them autonomously.
+- Self-hosted GitLab is the primary remote for most projects; use `glab` CLI
+  for GitLab API operations (issues, CI/CD, releases).
 
 ## Engineering Philosophy
 
 - **Evidence over assertions** — Never claim something works without showing proof.
   Don't say "tests pass" or "the fix works" — show the output.
-- **Systematic over ad-hoc** — Understand before acting. Investigate root causes,
-  never guess and re-guess. If stuck, step back — don't brute-force.
+- **Read before writing** — Understand existing patterns in the codebase before
+  modifying or adding code.
+- **Systematic over ad-hoc** — Understand root cause before acting. When stuck,
+  step back and rethink — never retry the same failing approach with minor variations.
 - **Minimal, focused changes** — Solve exactly what was asked. No gold-plating,
   no unrequested refactors, no speculative abstractions.
 
 ## Tooling Preferences
 
 - **Web projects:** use `bun`, never `npm` or `yarn`.
-- **Python projects:** use `uv` (never `pip3` or `pip`).
+- **Python projects with external dependencies:** use `uv`, never `pip3` or `pip`.
 - **TypeScript:** strict mode only — no `any`, no `// @ts-ignore`.
+- **Tests:** Vitest for unit/integration, Playwright for E2E.
+- **Docker:** pin image versions in all Dockerfiles and docker-compose files — never use `latest`.
 - **Documentation:** check Context7 (MCP) before WebFetch for library docs.
 - **Commits:** use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `infra:`).
 
 ## Memory
 
-Claude Code persists notes in `~/.claude/projects/<project>/memory/MEMORY.md` (loaded automatically).
+Claude Code auto-saves notes per project. Path is auto-generated from project location.
 
 **Save:** Stable patterns, key file paths, user preferences, recurring problem solutions.
 **Skip:** Session-specific context, speculative conclusions, anything already in project CLAUDE.md.
