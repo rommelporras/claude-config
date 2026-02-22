@@ -40,7 +40,7 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 | Path | Purpose |
 |------|---------|
 | `CLAUDE.md` | Global instructions loaded at every session — universal rules, WSL2 environment, tooling preferences, memory conventions |
-| `settings.json` | Model selection, enabled plugins, hook wiring (PreToolUse, Notification, Stop) |
+| `settings.json` | Model selection, enabled plugins, permission deny rules (credentials, settings files), hook wiring (PreToolUse, Notification, Stop) |
 | `hooks/protect-sensitive.sh` | Blocks Write/Edit to `.env`, credentials, and SSH key files by filename |
 | `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
 | `hooks/bash-write-protect.sh` | Blocks shell redirects to sensitive files and universally destructive commands |
@@ -94,11 +94,29 @@ Edit any file in this repo → change is immediately reflected in all Claude Cod
 
 ## Permission Model
 
-`settings.json` sets `skipDangerousModePermissionPrompt: true` — Claude runs without per-action approval prompts. Three hook scripts act as the safety net:
+`settings.json` sets `skipDangerousModePermissionPrompt: true` — Claude runs without per-action approval prompts. Two complementary layers enforce security boundaries:
+
+### Layer 1 — Permission deny rules (enforced by Claude Code core)
+
+Configured directly in `settings.json` under `permissions.deny`. Evaluated before any tool executes — nothing reaches the hooks if a deny rule matches.
+
+| Rule pattern | What it blocks |
+|---|---|
+| `Read(~/.ssh/**)` | Reading SSH private keys |
+| `Read(~/.aws/**)` | Reading AWS credentials |
+| `Read(~/.gnupg/**)` | Reading GPG private keys |
+| `Read(~/.config/gh/**)` | Reading GitHub CLI auth tokens |
+| `Edit/Write(~/.claude/settings.json)` | Claude modifying global config (prompt injection protection) |
+| `Edit/Write(./.claude/settings.json)` | Claude modifying project config (prompt injection protection) |
+| `Edit/Write(./.claude/settings.local.json)` | Claude modifying local project overrides |
+
+The settings.json rules specifically close the **prompt injection → settings manipulation** attack path: if Claude reads from a database, API response, or user-controlled file that contains malicious instructions, it cannot modify its own permission rules.
+
+### Layer 2 — Hook scripts (filename and content matching)
 
 | Hook | Trigger | What It Blocks |
 |------|---------|----------------|
-| `hooks/protect-sensitive.sh` | Write / Edit | `.env`, credentials, SSH keys — matched by filename |
+| `hooks/protect-sensitive.sh` | Write / Edit | `.env*`, `.pem`, credentials, SSH keys — matched by filename |
 | `hooks/scan-secrets.sh` | Write / Edit | Hardcoded secrets in content: PEM keys, AWS `AKIA*` keys, GitHub/Anthropic/OpenAI tokens |
 | `hooks/bash-write-protect.sh` | Bash | Shell redirects to sensitive files; destructive commands: `rm -rf /`, fork bombs, `dd if=/dev`, `mkfs.*`, force push to `main`/`master` |
 
@@ -222,6 +240,50 @@ vim ~/personal/claude-config/CLAUDE.md
 cd ~/personal/claude-config
 git add CLAUDE.md && git commit -m "chore: update global rules" && git push
 ```
+
+### Enable per-project sandboxing
+
+Sandboxing adds OS-level enforcement (bubblewrap on Linux/WSL2, Seatbelt on macOS) so that even a successful prompt injection cannot exfiltrate files or reach unauthorized network hosts. It's configured per project because each project needs its own `allowedDomains`.
+
+**Prerequisites (Linux / WSL2):**
+
+```bash
+sudo apt-get install bubblewrap socat
+```
+
+**Starter config — add to your project's `.claude/settings.json`:**
+
+```json
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": ["docker"],
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.npmjs.org",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org"
+      ]
+    }
+  }
+}
+```
+
+**How the domain list builds up:** The first time Claude runs a command that needs a domain not in the list, it prompts you to allow it. Granting it adds the domain permanently. After a few sessions the list stabilises.
+
+**Key options:**
+
+| Option | Recommended | Why |
+|--------|-------------|-----|
+| `autoAllowBashIfSandboxed` | `true` | Bash commands inside the sandbox run without per-command approval — the sandbox boundary is the guardrail |
+| `allowUnsandboxedCommands` | `false` | Disables the escape hatch; all commands must run inside the sandbox or be listed in `excludedCommands` |
+| `excludedCommands` | `["docker"]` | Docker requires host access incompatible with the sandbox — run it outside |
+
+> Sandboxing is not in the global `settings.json` because `allowedDomains` and `excludedCommands` vary per project. Configure it in the project `.claude/settings.json` and commit it to the repo so all machines pick it up automatically.
 
 ---
 
