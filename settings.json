@@ -7,6 +7,27 @@
   "skipDangerousModePermissionPrompt": true,
   "model": "sonnet",
   "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/notify.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Review the conversation. Did Claude complete all explicitly requested tasks? Look for: unfinished todo items, unfollowed 'I'll also...' promises, or tasks mentioned but not done. If everything requested is complete, respond {\"ok\": true}. Only respond {\"ok\": false, \"reason\": \"...(specific task)...\"} if there is a clear, specific incomplete task. Be conservative — default to {\"ok\": true} when in doubt.",
+            "model": "claude-haiku-4-5-20251001"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",

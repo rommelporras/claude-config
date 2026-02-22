@@ -1,6 +1,7 @@
 ---
 name: commit
 description: Create a git commit following conventional commit format. Use when the user explicitly asks to commit changes.
+argument-hint: "[optional: commit message]"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob
 ---
