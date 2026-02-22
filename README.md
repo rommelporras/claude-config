@@ -1,6 +1,8 @@
 # claude-config
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/rommelporras/claude-config)](https://github.com/rommelporras/claude-config/releases)
+[![Changelog](https://img.shields.io/badge/changelog-CHANGELOG.md-blue)](CHANGELOG.md)
 
 Personal global [Claude Code](https://claude.ai/code) configuration — one repo, every project protected.
 
@@ -191,18 +193,23 @@ Agent instructions here.
 
 `memory: project` gives the agent a per-project memory file at `.claude/agent-memory/<name>/MEMORY.md` that persists across sessions.
 
+### Add a project-specific command
+
+For workflows that only make sense in one repo (a release process, a deploy script), use `.claude/commands/<name>.md` inside that project — not here. Project commands don't conflict with global skills even if they share a name, because skills take priority over project commands only when they're the same type.
+
 ### Edit global rules
 
 Edit `CLAUDE.md` directly — the symlink means it takes effect immediately. No reinstall needed.
 
 ---
 
-After any change, commit and push to sync across all your machines:
+After any change, sync across all your machines:
 
 ```bash
 cd ~/personal/claude-config
-/commit
-/push
+/commit          # stage and commit with secret scan + branch check
+/push            # push to all remotes
+/release         # cut a versioned release (updates CHANGELOG, tags, GitHub release)
 ```
 
 ---
