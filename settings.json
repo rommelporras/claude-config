@@ -13,13 +13,6 @@
       "Write(./.claude/settings.local.json)"
     ]
   },
-  "enabledPlugins": {
-    "superpowers@superpowers-marketplace": true,
-    "context7@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true
-  },
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet",
   "hooks": {
     "Notification": [
       {
@@ -66,5 +59,12 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "context7@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "model": "sonnet"
 }

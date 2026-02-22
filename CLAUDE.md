@@ -21,8 +21,10 @@ Project CLAUDE.md files add project-specific context on top of this.
 
 - Shell: zsh.
 - Windows Chrome for browser automation at the standard Windows path.
-- 1Password CLI (`op`) is available but requires interactive auth — generate
-  `op read` commands for the user to run, never run them autonomously.
+- **Never run `op` commands or any command that touches 1Password data** — this
+  terminal has no `op` access. Generate the commands and ask the user to run
+  them in their safe terminal. Also applies to `kubectl create secret` or any
+  command that embeds secret values from `op`.
 - Self-hosted GitLab is the primary remote for most projects; use `glab` CLI
   for GitLab API operations (issues, CI/CD, releases).
 
