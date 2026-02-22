@@ -33,7 +33,7 @@ Project CLAUDE.md files add project-specific context on top of this.
 ## Tooling Preferences
 
 - **Web projects:** use `bun`, never `npm` or `yarn`.
-- **Python projects:** use `pip3`.
+- **Python projects:** use `uv` (never `pip3` or `pip`).
 - **TypeScript:** strict mode only — no `any`, no `// @ts-ignore`.
 - **Documentation:** check Context7 (MCP) before WebFetch for library docs.
 - **Commits:** use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `infra:`).

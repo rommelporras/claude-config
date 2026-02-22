@@ -8,13 +8,16 @@ Personal global Claude Code configuration — applies to all projects automatica
 |------|---------|
 | `CLAUDE.md` | Global instructions: universal rules, WSL2 env, code preferences |
 | `settings.json` | Model, plugins, global hooks |
-| `hooks/protect-sensitive.sh` | Blocks writes to `.env`, credentials, SSH keys on every project |
-| `skills/` | Reserved for future truly-universal skills (currently empty — see note below) |
+| `hooks/protect-sensitive.sh` | Blocks writes to `.env`, credentials, SSH keys on every project (Write/Edit) |
+| `hooks/bash-write-protect.sh` | Blocks Bash shell redirects (`>`, `>>`, `tee`) to sensitive files |
+| `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains secret patterns (keys, tokens, PEM) |
+| `skills/commit/` | Global `/commit` skill — conventional commits, secret scan, no AI attribution |
 | `agents/` | Global subagents available in all projects (currently empty) |
 
-> **Skills note:** Personal skills override project skills (personal > project priority).
-> Do NOT add `/commit` or `/release` here — they need per-project customization.
-> Only add skills that are 100% universal with no project-specific variation.
+> **Skills note:** Personal skills take priority over project skills (personal > project).
+> A project-level skill with the same name **cannot** override a skill defined here.
+> Only add skills that are universal across all projects with no per-project variation.
+> `/commit` qualifies: all projects use conventional commits and the same safety rules.
 
 ## New Machine Setup
 
@@ -27,6 +30,8 @@ ln -sf ~/personal/claude-config/CLAUDE.md ~/.claude/CLAUDE.md
 ln -sf ~/personal/claude-config/settings.json ~/.claude/settings.json
 mkdir -p ~/.claude/hooks
 ln -sf ~/personal/claude-config/hooks/protect-sensitive.sh ~/.claude/hooks/protect-sensitive.sh
+ln -sf ~/personal/claude-config/hooks/bash-write-protect.sh ~/.claude/hooks/bash-write-protect.sh
+ln -sf ~/personal/claude-config/hooks/scan-secrets.sh ~/.claude/hooks/scan-secrets.sh
 ln -sf ~/personal/claude-config/skills ~/.claude/skills
 ln -sf ~/personal/claude-config/agents ~/.claude/agents
 ```
