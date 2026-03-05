@@ -17,16 +17,20 @@ Project CLAUDE.md files add project-specific context on top of this.
   `kubectl delete`, `helm uninstall`, or anything that destroys data requires
   explicit user confirmation before running.
 
-## Personal Environment (WSL2)
+## Environment
 
-- Shell: zsh.
-- Windows Chrome for browser automation at the standard Windows path.
-- **Never run `op` commands or any command that touches 1Password data** — this
-  terminal has no `op` access. Generate the commands and ask the user to run
-  them in their safe terminal. Also applies to `kubectl create secret` or any
-  command that embeds secret values from `op`.
-- Self-hosted GitLab is the primary remote for most projects; use `glab` CLI
-  for GitLab API operations (issues, CI/CD, releases).
+Environment is auto-detected. Key constraints per platform:
+
+- **Aurora DX** (immutable Fedora): No `apt-get`, no `chsh`. Use `rpm-ostree` or `brew`.
+  Shell is zsh via Ptyxis custom command. 1Password SSH Agent at `~/.1password/agent.sock`.
+- **WSL2**: No `op` access in this terminal. Windows Chrome for browser automation.
+- **Distrobox**: No `op` access — use `distrobox-host-exec op` if needed.
+  `$HOME` is container-local, not the host home.
+
+All platforms:
+- Self-hosted GitLab is the primary remote; use `glab` CLI for GitLab operations.
+- Work projects may use GitHub instead.
+- **Never run `op` commands** — generate them and ask the user to run manually.
 
 ## Engineering Philosophy
 

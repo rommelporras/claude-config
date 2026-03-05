@@ -63,8 +63,22 @@
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
     "context7@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true
+    "playwright@claude-plugins-official": true,
+    "episodic-memory@superpowers-marketplace": true
   },
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
