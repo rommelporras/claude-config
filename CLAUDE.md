@@ -16,6 +16,8 @@ Project CLAUDE.md files add project-specific context on top of this.
 - **No destructive operations without confirmation** — `rm -rf`, force pushes,
   `kubectl delete`, `helm uninstall`, or anything that destroys data requires
   explicit user confirmation before running.
+- **Branching default: trunk-based** — commit directly to `main` unless the project
+  CLAUDE.md specifies a different strategy (e.g. GitFlow with `develop`).
 
 ## Environment
 
