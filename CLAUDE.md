@@ -45,20 +45,7 @@ All platforms:
 - **Minimal, focused changes** — Solve exactly what was asked. No gold-plating,
   no unrequested refactors, no speculative abstractions.
 
-## Tooling Preferences
+## Context Management
 
-- **Web projects:** use `bun`, never `npm` or `yarn`.
-- **Python projects with external dependencies:** use `uv`, never `pip3` or `pip`.
-- **TypeScript:** strict mode only — no `any`, no `// @ts-ignore`.
-- **Tests:** Vitest for unit/integration, Playwright for E2E.
-- **Docker:** pin image versions in all Dockerfiles and docker-compose files — never use `latest`.
-- **Documentation:** check Context7 (MCP) before WebFetch for library docs.
-- **Commits:** use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `infra:`).
-
-## Memory
-
-Claude Code auto-saves notes per project. Path is auto-generated from project location.
-
-**Save:** Stable patterns, key file paths, user preferences, recurring problem solutions.
-**Skip:** Session-specific context, speculative conclusions, anything already in project CLAUDE.md.
-**Trim:** Remove entries that turn out wrong or are superseded by newer findings.
+When compacting, always preserve: the full list of modified files, test commands
+that were used, and any architectural decisions made during the session.

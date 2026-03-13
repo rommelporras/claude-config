@@ -32,6 +32,8 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 ~/personal/claude-config/       ← versioned source of truth
 ├── CLAUDE.md
 ├── settings.json
+├── rules/                      ← user-level rules (loaded every session)
+│   └── tooling.md
 ├── hooks/
 ├── skills/
 ├── agents/
@@ -41,6 +43,7 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 ~/.claude/                      ← Claude Code config dir (all symlinks)
 ├── CLAUDE.md     ──────────→   ../personal/claude-config/CLAUDE.md
 ├── settings.json ──────────→   ../personal/claude-config/settings.json
+├── rules/        ──────────→   ../personal/claude-config/rules/
 ├── hooks/        ──────────→   ../personal/claude-config/hooks/
 ├── skills/       ──────────→   ../personal/claude-config/skills/
 └── agents/       ──────────→   ../personal/claude-config/agents/
@@ -51,6 +54,7 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 | Component | Who wins | Behaviour |
 |-----------|----------|-----------|
 | `CLAUDE.md` | Project over Global | Project instructions layer on top; project wins conflicts |
+| Rules | Project over User | User-level rules load first; project rules have higher priority |
 | Skills (same name) | Personal over Project | Personal skill silently blocks any project-level override |
 | Agents (same name) | Project over Personal | Project agent overrides the global default |
 | Hooks | Both run | Global + project hooks stack — neither replaces the other |
@@ -62,11 +66,12 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 ```bash
 git clone git@github.com:rommelporras/claude-config.git ~/personal/claude-config
 
-ln -sf ~/personal/claude-config/CLAUDE.md ~/.claude/CLAUDE.md
-ln -sf ~/personal/claude-config/settings.json ~/.claude/settings.json
-ln -sf ~/personal/claude-config/hooks ~/.claude/hooks
-ln -sf ~/personal/claude-config/skills ~/.claude/skills
-ln -sf ~/personal/claude-config/agents ~/.claude/agents
+ln -sf  ~/personal/claude-config/CLAUDE.md      ~/.claude/CLAUDE.md
+ln -sf  ~/personal/claude-config/settings.json  ~/.claude/settings.json
+ln -sfn ~/personal/claude-config/rules           ~/.claude/rules
+ln -sfn ~/personal/claude-config/hooks           ~/.claude/hooks
+ln -sfn ~/personal/claude-config/skills          ~/.claude/skills
+ln -sfn ~/personal/claude-config/agents          ~/.claude/agents
 ```
 
 Restart Claude Code. Every project now inherits these rules automatically.
@@ -77,8 +82,9 @@ Restart Claude Code. Every project now inherits these rules automatically.
 
 | Path | Purpose |
 |------|---------|
-| `CLAUDE.md` | Global instructions — universal rules, WSL2 environment, tooling preferences, memory conventions |
-| `settings.json` | Model, plugins, permission deny rules, hook wiring |
+| `CLAUDE.md` | Global instructions — universal rules, multi-platform environment, engineering philosophy, compaction guidance |
+| `settings.json` | Plugins, permission deny rules, hook wiring, attribution disabled, effort level |
+| `rules/tooling.md` | Tooling preferences — package managers, test frameworks, commit format (loaded every session as a user-level rule) |
 | `hooks/protect-sensitive.sh` | Blocks Write/Edit to `.env*`, `.pem`, credential files, SSH keys — matched by filename |
 | `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
 | `hooks/bash-write-protect.sh` | Blocks shell redirects to sensitive files and universally destructive commands |
@@ -200,9 +206,22 @@ Agent instructions here.
 
 For workflows that only make sense in one repo (a release process, a deploy script), use `.claude/commands/<name>.md` inside that project — not here. Project commands don't conflict with global skills even if they share a name, because skills take priority over project commands only when they're the same type.
 
-### Edit global rules
+### Add a rule
 
-Edit `CLAUDE.md` directly — the symlink means it takes effect immediately. No reinstall needed.
+Create `rules/<name>.md` for instructions that apply to every project. Rules without `paths` frontmatter load unconditionally every session, like CLAUDE.md. Rules with `paths` frontmatter load only when Claude works with matching files:
+
+```yaml
+---
+paths:
+  - "**/*.tsx"
+---
+
+Use functional components with hooks. Never use class components.
+```
+
+### Edit global instructions
+
+Edit `CLAUDE.md` or any file in `rules/` directly — symlinks mean changes take effect immediately. No reinstall needed.
 
 ---
 
@@ -232,11 +251,11 @@ rm .claude/commands/push.md     # replaced by global /push
 
 | Rule | Lives in |
 |------|----------|
-| No AI attribution in commits | `CLAUDE.md` → Universal Rules |
+| No AI attribution in commits | `CLAUDE.md` → Universal Rules + `settings.json` → `attribution` |
 | No automatic git commits or pushes | `CLAUDE.md` → Universal Rules |
-| Use `bun` for web projects | `CLAUDE.md` → Tooling Preferences |
-| Use `uv` for Python projects with external dependencies | `CLAUDE.md` → Tooling Preferences |
-| Conventional commit format | `CLAUDE.md` → Tooling Preferences |
+| Use `bun` for web projects | `rules/tooling.md` |
+| Use `uv` for Python projects with external dependencies | `rules/tooling.md` |
+| Conventional commit format | `rules/tooling.md` |
 
 Keep project-specific rules: branching model, tech stack decisions, domain constraints, secrets layout.
 

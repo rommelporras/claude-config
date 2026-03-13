@@ -1,0 +1,7 @@
+- **Web projects:** use `bun`, never `npm` or `yarn`.
+- **Python projects with external dependencies:** use `uv`, never `pip3` or `pip`.
+- **TypeScript:** strict mode only — no `any`, no `// @ts-ignore`.
+- **Tests:** Vitest for unit/integration, Playwright for E2E.
+- **Docker:** pin image versions in all Dockerfiles and docker-compose files — never use `latest`.
+- **Documentation:** check Context7 (MCP) before WebFetch for library docs.
+- **Commits:** use conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `infra:`).
