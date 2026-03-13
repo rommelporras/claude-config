@@ -5,6 +5,22 @@ All notable changes to this project will be documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.2](https://github.com/rommelporras/claude-config/releases/tag/v1.0.2) - 2026-03-14
+
+Reorganises global config for better maintainability and adds settings-level attribution control.
+
+### Changed
+- Tooling preferences moved from CLAUDE.md to `rules/tooling.md` (user-level rule, loaded every session)
+- Redundant Memory section removed from CLAUDE.md — now handled by built-in auto memory
+- Compaction guidance added to CLAUDE.md to preserve critical context during long sessions
+- Environment section expanded to support Aurora DX and Distrobox alongside WSL2
+- Trunk-based branching default added to Universal Rules
+- All `~/.claude/` config files now symlinked to repo (previously copied) — eliminates drift
+- README updated with rules directory, symlink commands, architecture diagram, and migration table
+- `.gitignore` updated to exclude `worktrees/`
+- `attribution` setting added to `settings.json` — disables Co-Authored-By and PR attribution at the settings level
+- `effortLevel: "high"` added to `settings.json`
+
 ## [v1.0.1](https://github.com/rommelporras/claude-config/releases/tag/v1.0.1) - 2026-02-23
 
 Improves stop hook reliability and tightens the 1Password CLI access policy.
