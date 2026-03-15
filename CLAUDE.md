@@ -5,8 +5,6 @@ Project CLAUDE.md files add project-specific context on top of this.
 
 ## Universal Rules
 
-- **NO AI attribution** — no "Generated with Claude Code", "Co-Authored-By: Claude",
-  or any AI-related attribution in commits, PRs, or code comments.
 - **NO automatic git commits or pushes** — only commit when explicitly asked via
   `/commit`, `/release`, or direct user instruction.
 - **Security review before every commit** — scan all changed files for leaked
@@ -74,11 +72,25 @@ All platforms:
 - If 3+ fix attempts fail, STOP — it's likely an architectural problem, not a bug.
   Discuss with the user before attempting more fixes.
 
-### Subagent Strategy
+### Agent Orchestration
+
+Use agents proactively — don't wait for the user to ask:
+
+| Trigger | Agent | Model |
+|---|---|---|
+| Complex feature request | `planner` | Opus |
+| Architectural decision | `architect` | Opus |
+| Code just written/modified | `code-reviewer` | Opus |
+| Bug fix or new feature | `tdd-guide` | Sonnet |
+| Security-sensitive code | `security-reviewer` | Sonnet |
+| Build/type errors | `build-resolver` | Sonnet |
+| Dead code cleanup | `refactor-cleaner` | Sonnet |
+| Documentation updates | `doc-updater` | Haiku |
 
 - Use subagents to keep main context window clean. Offload research, exploration,
   and parallel analysis to subagents.
 - One task per subagent for focused execution.
+- Launch multiple agents in parallel for independent operations.
 - Never trust subagent success reports — verify changes independently via diff.
 
 ### Autonomous Bug Fixing
