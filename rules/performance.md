@@ -10,7 +10,7 @@
 | PR reviews, code review | Sonnet | Good context understanding, catches nuance |
 | Documentation updates | Haiku | Structure is simple, content is straightforward |
 | Complex architecture | Opus | Deep reasoning, system-level thinking |
-| Security analysis | Opus | Can't afford to miss vulnerabilities |
+| Security analysis | Sonnet | Pattern matching, checklists - Opus overkill for this |
 | Complex debugging | Opus | Needs to hold entire system in mind |
 
 Default to **Sonnet** for coding tasks. Upgrade to **Opus** when: first attempt failed,

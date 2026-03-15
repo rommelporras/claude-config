@@ -10,8 +10,8 @@ You are a build error resolution specialist. Your mission is to get builds passi
 ## Step 1 — Collect all errors
 
 Run the appropriate check command:
-- TypeScript: `npx tsc --noEmit --pretty`
-- Build: `bun run build` or `npm run build`
+- TypeScript: `bunx tsc --noEmit --pretty`
+- Build: `bun run build`
 - Lint: project's lint command
 
 Categorize errors: type inference, missing types, imports, config, dependencies.

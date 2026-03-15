@@ -5,6 +5,8 @@ Project CLAUDE.md files add project-specific context on top of this.
 
 ## Universal Rules
 
+- **NO AI attribution** — no "Co-Authored-By: Claude", "Generated with Claude Code",
+  "AI-assisted", or any AI reference in commits, PRs, code comments, or docs.
 - **NO automatic git commits or pushes** — only commit when explicitly asked via
   `/commit`, `/release`, or direct user instruction.
 - **Security review before every commit** — scan all changed files for leaked
@@ -81,10 +83,6 @@ Use agents proactively — don't wait for the user to ask:
 | Complex feature request | `planner` | Opus |
 | Architectural decision | `architect` | Opus |
 | Code just written/modified | `code-reviewer` | Opus |
-| Bug fix or new feature | `tdd-guide` | Sonnet |
-| Security-sensitive code | `security-reviewer` | Sonnet |
-| Build/type errors | `build-resolver` | Sonnet |
-| Dead code cleanup | `refactor-cleaner` | Sonnet |
 | Documentation updates | `doc-updater` | Haiku |
 
 - Use subagents to keep main context window clean. Offload research, exploration,

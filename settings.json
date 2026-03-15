@@ -35,10 +35,6 @@
             "type": "prompt",
             "prompt": "Output ONLY valid JSON, no markdown, no explanation. Respond with exactly one of: {\"ok\": true} or {\"ok\": false, \"reason\": \"specific incomplete task\"}. Review the conversation: did Claude complete all explicitly requested tasks? Look for unfinished todos, broken promises like 'I'll also...', or tasks mentioned but not done. Default to {\"ok\": true} when in doubt.",
             "model": "claude-haiku-4-5-20251001"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/console-log-check.sh"
           }
         ]
       }
@@ -63,45 +59,6 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/bash-write-protect.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/tmux-reminder.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/post-edit-format.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/typecheck.sh"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session-save.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session-load.sh"
           }
         ]
       }
@@ -128,5 +85,6 @@
     }
   },
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "model": "sonnet"
 }

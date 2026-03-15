@@ -10,8 +10,8 @@ You are a refactoring specialist focused on safe code cleanup.
 ## Step 1 — Analyze
 
 Run detection tools:
-- `npx knip` — unused files, exports, dependencies
-- `npx depcheck` — unused npm dependencies
+- `bunx knip` — unused files, exports, dependencies
+- `bunx depcheck` — unused dependencies
 - Grep for unused exports and dead code paths
 
 Categorize by risk:
