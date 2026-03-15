@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "deny": [
       "Read(~/.ssh/**)",
@@ -79,10 +83,6 @@
         "repo": "obra/superpowers-marketplace"
       }
     }
-  },
-  "attribution": {
-    "commit": "",
-    "pr": ""
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true

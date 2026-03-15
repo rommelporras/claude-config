@@ -8,6 +8,14 @@ allowed-tools: Bash, Read, Grep, Glob
 
 Create a git commit following these rules exactly. Work through each step in order and stop immediately if a step reveals a problem.
 
+## Step 0 - Acquire skill lock
+
+```bash
+touch /tmp/.claude-skill-commit
+```
+
+This allows git commands to pass the `block-git-operations.sh` hook. Clean up in Step 6.
+
 ## Arguments
 
 If `$ARGUMENTS` is provided, treat it as the full commit message (still apply formatting rules and run all steps).
@@ -88,6 +96,11 @@ EOF
 ## Step 6 — Verify
 
 Run `git log --oneline -1` and `git status`. Show both outputs so the user can confirm.
+
+Clean up the skill lock:
+```bash
+rm -f /tmp/.claude-skill-commit
+```
 
 ## Hard stops
 
