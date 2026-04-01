@@ -10,7 +10,11 @@ Personal global [Claude Code](https://claude.ai/code) configuration — one repo
 - **Security** — blocks credential reads, hardcoded secrets, and destructive commands via hooks; Claude asks before any destructive operation
 - **Notifications** — OS popup + sound when Claude needs attention, on macOS, WSL2, and Linux
 - **Global skills** — `/commit`, `/push`, and `/explain-code` available in every repo
-- **Global agents** — `code-reviewer` with per-project memory, available in all projects
+- **Global agents** — `code-reviewer`, `planner`, `architect`, and `doc-updater` available in all projects
+- **Output styles** — `aware` (stay in the loop) and `aware-deep` (hands-on learning) modes
+- **Status line** — project dir, model, context %, cost, lines changed, rate limit, duration (Nerd Font icons for compact display)
+- **Catalog** — optional agent and hook templates to enable per project
+- **Remote control** — all sessions accessible from claude.ai/code and mobile app
 
 ## Table of Contents
 
@@ -32,21 +36,28 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 ~/personal/claude-config/       ← versioned source of truth
 ├── CLAUDE.md
 ├── settings.json
+├── statusline-command.sh
 ├── rules/                      ← user-level rules (loaded every session)
-│   └── tooling.md
+│   ├── tooling.md
+│   └── performance.md
 ├── hooks/
 ├── skills/
 ├── agents/
+├── output-styles/
+├── catalog/                    ← opt-in templates (not symlinked)
+│   ├── agents/
+│   └── hooks/
 └── .claude/
     └── commands/               ← project-specific commands (e.g. /release)
 
 ~/.claude/                      ← Claude Code config dir (all symlinks)
-├── CLAUDE.md     ──────────→   ../personal/claude-config/CLAUDE.md
-├── settings.json ──────────→   ../personal/claude-config/settings.json
-├── rules/        ──────────→   ../personal/claude-config/rules/
-├── hooks/        ──────────→   ../personal/claude-config/hooks/
-├── skills/       ──────────→   ../personal/claude-config/skills/
-└── agents/       ──────────→   ../personal/claude-config/agents/
+├── CLAUDE.md      ─────────→   ../personal/claude-config/CLAUDE.md
+├── settings.json  ─────────→   ../personal/claude-config/settings.json
+├── rules/         ─────────→   ../personal/claude-config/rules/
+├── hooks/         ─────────→   ../personal/claude-config/hooks/
+├── skills/        ─────────→   ../personal/claude-config/skills/
+├── agents/        ─────────→   ../personal/claude-config/agents/
+└── output-styles/ ─────────→   ../personal/claude-config/output-styles/
 ```
 
 **When global and project-level configs conflict:**
@@ -72,6 +83,7 @@ ln -sfn ~/personal/claude-config/rules           ~/.claude/rules
 ln -sfn ~/personal/claude-config/hooks           ~/.claude/hooks
 ln -sfn ~/personal/claude-config/skills          ~/.claude/skills
 ln -sfn ~/personal/claude-config/agents          ~/.claude/agents
+ln -sfn ~/personal/claude-config/output-styles   ~/.claude/output-styles
 ```
 
 Restart Claude Code. Every project now inherits these rules automatically.
@@ -82,9 +94,11 @@ Restart Claude Code. Every project now inherits these rules automatically.
 
 | Path | Purpose |
 |------|---------|
-| `CLAUDE.md` | Global instructions — universal rules, multi-platform environment, engineering philosophy, compaction guidance |
-| `settings.json` | Plugins, permission deny rules, hook wiring, attribution disabled, effort level |
-| `rules/tooling.md` | Tooling preferences — package managers, test frameworks, commit format (loaded every session as a user-level rule) |
+| `CLAUDE.md` | Global instructions — universal rules, multi-platform environment, engineering philosophy, working strategy, agent orchestration |
+| `settings.json` | Plugins, permission deny rules, hook wiring, attribution disabled, effort level, remote control |
+| `statusline-command.sh` | Custom status line with Nerd Font icons — project dir, model, 󰍛 context %, cost, ± lines changed, 󰓅 rate limit, 󰥔 duration, worktree/agent indicators |
+| `rules/tooling.md` | Tooling preferences — package managers, test frameworks, commit format (loaded every session) |
+| `rules/performance.md` | Model routing strategy (Haiku/Sonnet/Opus by task type) and context window management |
 | `hooks/protect-sensitive.sh` | Blocks Write/Edit to `.env*`, `.pem`, credential files, SSH keys — matched by filename |
 | `hooks/scan-secrets.sh` | Blocks Write/Edit if content contains hardcoded secrets (PEM keys, AWS/GitHub/Anthropic/OpenAI tokens) |
 | `hooks/bash-write-protect.sh` | Blocks shell redirects to sensitive files and universally destructive commands |
@@ -92,7 +106,13 @@ Restart Claude Code. Every project now inherits these rules automatically.
 | `skills/commit/` | `/commit` — conventional commits, secret scan, branch safety, no AI attribution |
 | `skills/push/` | `/push` — auto-detects remotes, respects project push constraints |
 | `skills/explain-code/` | `/explain-code` — analogy → ASCII diagram → walkthrough → gotcha |
+| `output-styles/aware.md` | Default output style — brief reasoning, natural doc references, change summaries |
+| `output-styles/aware-deep.md` | Hands-on learning style — shows approach and lets user implement small changes |
 | `agents/code-reviewer.md` | Code reviewer — 🔴/🟡/💡 feedback tiers, per-project memory via `memory: project` |
+| `agents/planner.md` | Feature planning and architectural decisions (Opus) |
+| `agents/architect.md` | System design, scalability, ADR creation (Opus) |
+| `agents/doc-updater.md` | Documentation and codemap maintenance (Haiku) |
+| `catalog/` | Optional per-project templates — agents: `security-reviewer`, `build-resolver`, `tdd-guide`, `refactor-cleaner`; hooks: `console-log-check`, `typecheck`, `tmux-reminder`, `post-edit-format` |
 | `.claude/commands/release.md` | `/release` — semver tagging, CHANGELOG update, GitHub release (active in this repo only) |
 
 ---
@@ -201,6 +221,35 @@ Agent instructions here.
 ```
 
 `memory: project` gives the agent a per-project memory file at `.claude/agent-memory/<name>/MEMORY.md` that persists across sessions.
+
+### Add an output style
+
+Create `output-styles/<name>.md` with this frontmatter:
+
+```yaml
+---
+description: When and why to use this style
+keep-coding-instructions: true
+---
+
+Style instructions here.
+```
+
+Set as default globally in `settings.json` with `"outputStyle": "<name>"`, per project in `.claude/settings.json`, or toggle mid-session with `/config`.
+
+### Use a catalog template
+
+The `catalog/` directory contains optional agents and hooks designed for specific project types. To use one, copy it into your project:
+
+```bash
+# Copy an agent template into your project
+cp ~/personal/claude-config/catalog/agents/security-reviewer.md .claude/agents/
+
+# Copy a hook template and wire it in .claude/settings.json
+cp ~/personal/claude-config/catalog/hooks/typecheck.sh .claude/hooks/
+```
+
+Catalog items are not symlinked — they are copied so each project can customize them independently.
 
 ### Add a project-specific command
 

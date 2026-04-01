@@ -52,13 +52,13 @@ if [ -n "$remaining" ]; then
     else
         ctx_color="${RED}"
     fi
-    line+="$(printf " ${DIM}context${RESET} ${ctx_color}%s%%${RESET}" "$pct")"
+    line+="$(printf " ${DIM}󰍛${RESET} ${ctx_color}%s%%${RESET}" "$pct")"
 fi
 
 # session cost
 if [ -n "$cost" ] && [ "$cost" != "0" ]; then
     formatted_cost=$(printf "%.2f" "$cost")
-    line+="$(printf "${SEP} ${DIM}cost${RESET} \$%s" "$formatted_cost")"
+    line+="$(printf "${SEP} \$%s" "$formatted_cost")"
 fi
 
 # lines changed
@@ -66,7 +66,7 @@ if [ -n "$lines_added" ] || [ -n "$lines_removed" ]; then
     added="${lines_added:-0}"
     removed="${lines_removed:-0}"
     if [ "$added" -gt 0 ] || [ "$removed" -gt 0 ]; then
-        line+="$(printf "${SEP} ${DIM}lines${RESET} ${GREEN}+%s${RESET} ${RED}-%s${RESET}" "$added" "$removed")"
+        line+="$(printf "${SEP} ${DIM}±${RESET} ${GREEN}+%s${RESET} ${RED}-%s${RESET}" "$added" "$removed")"
     fi
 fi
 
@@ -80,7 +80,7 @@ if [ -n "$rate_5h" ]; then
     else
         rate_color="${DIM}"
     fi
-    line+="$(printf "${SEP} ${rate_color}limit %s%%/5h${RESET}" "$rate_pct")"
+    line+="$(printf "${SEP} ${rate_color}󰓅 %s%%/5h${RESET}" "$rate_pct")"
 fi
 
 # session duration
@@ -93,7 +93,7 @@ if [ -n "$duration_ms" ]; then
     else
         duration="${mins}m"
     fi
-    line+="$(printf "${SEP} ${DIM}%s${RESET}" "$duration")"
+    line+="$(printf "${SEP} ${DIM}󰥔 %s${RESET}" "$duration")"
 fi
 
 # worktree indicator

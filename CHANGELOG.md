@@ -5,6 +5,35 @@ All notable changes to this project will be documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0](https://github.com/rommelporras/claude-config/releases/tag/v1.1.0) - 2026-04-01
+
+Adds agent orchestration, output styles, catalog system, custom status line,
+remote control, and expanded working strategy rules.
+
+### Added
+- `planner` agent (Opus) — feature planning and architectural decisions
+- `architect` agent (Opus) — system design, scalability, ADR creation
+- `doc-updater` agent (Haiku) — documentation and codemap maintenance
+- `aware` output style — brief reasoning, natural doc references, change summaries
+- `aware-deep` output style — shows approach and lets user implement small changes
+- `catalog/` directory — optional per-project agent and hook templates
+  - Agents: `security-reviewer`, `build-resolver`, `tdd-guide`, `refactor-cleaner`
+  - Hooks: `console-log-check`, `typecheck`, `tmux-reminder`, `post-edit-format`
+- Custom status line with Nerd Font icons showing project dir, model, context %, cost, lines changed, rate limit, duration, worktree, and agent indicators
+- `rules/performance.md` — model routing strategy (Haiku/Sonnet/Opus by task type) and context window management
+- Remote control enabled for all sessions via `remoteControl.enableForAllSessions`
+- Working strategy rules added to CLAUDE.md: plan-before-building, TDD, systematic debugging, agent orchestration triggers, autonomous bug fixing
+- Skill lock mechanism for `/commit` skill to bypass `bash-write-protect` hook during git operations
+- `ui-ux-pro-max` plugin enabled globally
+
+### Changed
+- Web-specific agents (`security-reviewer`, `build-resolver`, `tdd-guide`, `refactor-cleaner`) moved from `agents/` to `catalog/agents/` — now opt-in templates instead of always-loaded
+- Web-specific hooks (`console-log-check`, `typecheck`, `tmux-reminder`, `post-edit-format`) moved from `hooks/` to `catalog/hooks/`
+- Session persistence hooks (`session-load`, `session-save`) removed — replaced by built-in auto memory
+- Status line uses single `jq` call for all field parsing instead of multiple pipes
+- Status line labels replaced with Nerd Font icons (󰍛 context, ± lines, 󰓅 rate limit, 󰥔 duration) for compact display on smaller screens
+- CLAUDE.md expanded with engineering philosophy, working strategy, and agent orchestration table
+
 ## [v1.0.2](https://github.com/rommelporras/claude-config/releases/tag/v1.0.2) - 2026-03-14
 
 Reorganises global config for better maintainability and adds settings-level attribution control.
