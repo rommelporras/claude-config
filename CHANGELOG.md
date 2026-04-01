@@ -5,6 +5,15 @@ All notable changes to this project will be documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.1](https://github.com/rommelporras/claude-config/releases/tag/v1.1.1) - 2026-04-01
+
+Renames /release to /ship to avoid conflict with the generic superpowers plugin skill
+that was shadowing all project-level release commands.
+
+### Changed
+- `/release` command renamed to `/ship` — avoids conflict with superpowers generic `/release` skill
+- All references updated across CLAUDE.md, README.md, and ship.md
+
 ## [v1.1.0](https://github.com/rommelporras/claude-config/releases/tag/v1.1.0) - 2026-04-01
 
 Adds agent orchestration, output styles, catalog system, custom status line,
