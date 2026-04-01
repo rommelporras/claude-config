@@ -8,7 +8,7 @@ Project CLAUDE.md files add project-specific context on top of this.
 - **NO AI attribution** — no "Co-Authored-By: Claude", "Generated with Claude Code",
   "AI-assisted", or any AI reference in commits, PRs, code comments, or docs.
 - **NO automatic git commits or pushes** — only commit when explicitly asked via
-  `/commit`, `/release`, or direct user instruction.
+  `/commit`, `/ship`, or direct user instruction.
 - **Security review before every commit** — scan all changed files for leaked
   secrets before staging. Use secret manager references only, never hardcoded values.
 - **Never run dev servers** — never start `bun run dev`, `uvicorn`, or similar

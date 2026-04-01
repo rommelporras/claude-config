@@ -48,7 +48,7 @@ Claude Code loads `~/.claude/` on every session. This repo lives at `~/personal/
 │   ├── agents/
 │   └── hooks/
 └── .claude/
-    └── commands/               ← project-specific commands (e.g. /release)
+    └── commands/               ← project-specific commands (e.g. /ship)
 
 ~/.claude/                      ← Claude Code config dir (all symlinks)
 ├── CLAUDE.md      ─────────→   ../personal/claude-config/CLAUDE.md
@@ -113,7 +113,7 @@ Restart Claude Code. Every project now inherits these rules automatically.
 | `agents/architect.md` | System design, scalability, ADR creation (Opus) |
 | `agents/doc-updater.md` | Documentation and codemap maintenance (Haiku) |
 | `catalog/` | Optional per-project templates — agents: `security-reviewer`, `build-resolver`, `tdd-guide`, `refactor-cleaner`; hooks: `console-log-check`, `typecheck`, `tmux-reminder`, `post-edit-format` |
-| `.claude/commands/release.md` | `/release` — semver tagging, CHANGELOG update, GitHub release (active in this repo only) |
+| `.claude/commands/ship.md` | `/ship` — semver tagging, CHANGELOG update, GitHub release (active in this repo only) |
 
 ---
 
@@ -280,7 +280,7 @@ After any change, sync across all your machines:
 cd ~/personal/claude-config
 /commit          # stage and commit with secret scan + branch check
 /push            # push to all remotes
-/release         # cut a versioned release (updates CHANGELOG, tags, GitHub release)
+/ship            # cut a versioned release (updates CHANGELOG, tags, GitHub release)
 ```
 
 ---

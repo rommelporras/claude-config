@@ -5,9 +5,9 @@ Tag, update CHANGELOG, push, and create GitHub release.
 ## Usage
 
 ```
-/release                      → Auto-determine version from commits
-/release v1.0.0               → Explicit version, auto-generate title
-/release v1.0.0 "Title Here"  → Explicit version AND title
+/ship                      → Auto-determine version from commits
+/ship v1.0.0               → Explicit version, auto-generate title
+/ship v1.0.0 "Title Here"  → Explicit version AND title
 ```
 
 ## Instructions
