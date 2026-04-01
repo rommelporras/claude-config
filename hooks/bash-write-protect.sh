@@ -63,11 +63,17 @@ for pattern in "${DANGEROUS[@]}"; do
   fi
 done
 
-# Force push to main or master
-if echo "$COMMAND" | grep -qE "git push.*(--force|-f)" && \
-   echo "$COMMAND" | grep -qE "\b(main|master)\b"; then
-  echo "BLOCKED: Force push to main/master is not allowed." >&2
-  echo "Use a regular push or open a PR." >&2
+# =============================================================================
+# GIT PUSH — always blocked, no bypass
+# =============================================================================
+# Claude must NEVER push directly. The /push skill tells the user to run
+# `! git push origin main` themselves. Lock files do NOT bypass this.
+# Force push is doubly blocked (matched by both checks).
+
+if echo "$COMMAND" | grep -qE '\bgit\s+push\b'; then
+  echo "BLOCKED: git push is not allowed." >&2
+  echo "   Use /push (which gives you the command to run yourself)." >&2
+  echo "   Or run directly: ! git push origin main" >&2
   exit 2
 fi
 

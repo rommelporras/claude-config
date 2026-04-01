@@ -1,6 +1,6 @@
 ---
 name: push
-description: Push the current branch to all configured remotes. Use when the user explicitly asks to push changes.
+description: Validate and push the current branch to all configured remotes. Use when the user explicitly asks to push changes.
 disable-model-invocation: true
 allowed-tools: Bash, Read
 ---
@@ -33,26 +33,28 @@ Note any constraints — apply them in Step 3.
 
 ## Step 3 — Push to each remote
 
-Push the current branch to each configured remote, in order (`origin` first, then others).
+**IMPORTANT:** `git push` is blocked by the global PreToolUse hook (`bash-write-protect.sh`).
+You CANNOT run it directly — the hook will block it. Do NOT attempt to bypass the hook.
 
-For each remote:
+Instead, give the user the exact command to run via `!` prefix in the prompt.
 
-```bash
-# First push to this remote for this branch (no upstream set):
-git push -u <remote> <branch>
+For each remote (in order, `origin` first):
 
-# Subsequent pushes (upstream already set):
-git push <remote> <branch>
+1. If a constraint from Step 2 blocks this remote, **skip it** and explain why
+2. Otherwise, tell the user:
+
+```
+Run this to push:
+! git push <remote> <branch>
 ```
 
 Rules:
 - **Never use `--force` or `-f`** unless the user explicitly requested it in their message
-- If a constraint from Step 2 blocks a specific remote on the current branch, **skip it** and explain why (do not error)
-- If a push fails on one remote, report the error and **continue to the next remote** — do not stop entirely
+- Wait for the user to confirm the push completed before proceeding to the next remote
 
 ## Step 4 — Report results
 
-Show a clear summary:
+After the user confirms the push, show a clear summary:
 
 ```
 Push Results:
