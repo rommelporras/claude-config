@@ -70,7 +70,7 @@ done
 # `! git push origin main` themselves. Lock files do NOT bypass this.
 # Force push is doubly blocked (matched by both checks).
 
-if echo "$COMMAND" | grep -qE '\bgit\s+push\b'; then
+if echo "$COMMAND" | grep -qE '(^|[;|&])\s*git\s+push\b'; then
   echo "BLOCKED: git push is not allowed." >&2
   echo "   Use /push (which gives you the command to run yourself)." >&2
   echo "   Or run directly: ! git push origin main" >&2
