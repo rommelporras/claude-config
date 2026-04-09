@@ -72,8 +72,7 @@
     "superpowers@superpowers-marketplace": true,
     "context7@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
-    "episodic-memory@superpowers-marketplace": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+    "episodic-memory@superpowers-marketplace": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -99,5 +98,6 @@
   "skipDangerousModePermissionPrompt": true,
   "remoteControl": {
     "enableForAllSessions": true
-  }
+  },
+  "model": "sonnet"
 }
