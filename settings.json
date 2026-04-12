@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Output ONLY valid JSON, no markdown, no explanation. Respond with exactly one of: {\"ok\": true} or {\"ok\": false, \"reason\": \"specific incomplete task\"}. Review the conversation: did Claude complete all explicitly requested tasks? Look for unfinished todos, broken promises like 'I'll also...', or tasks mentioned but not done. Default to {\"ok\": true} when in doubt.",
+            "prompt": "Output ONLY valid JSON, no markdown, no explanation. Respond with exactly one of: {\"ok\": true} or {\"ok\": false, \"reason\": \"specific incomplete task\"}. Review ONLY Claude's LAST response. Check for: (1) broken promises like 'I'll also...' or 'Let me also...' where the promised action was not taken in that same response, (2) a task Claude said it would do but visibly skipped. Return {\"ok\": true} if: Claude completed what it set out to do in this response, OR Claude asked the user a question and is waiting for input, OR Claude is mid-workflow and paused at a step that requires user decision. Multi-turn workflows (brainstorming, planning, debugging) naturally span many responses — do NOT flag these as incomplete. Default to {\"ok\": true} when in doubt.",
             "model": "claude-haiku-4-5-20251001"
           }
         ]
